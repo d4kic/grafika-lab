@@ -221,11 +221,11 @@ void Clab2prnaopackeView::DrawFigure(CDC* pDC)
 	DrawPartAt(pDC, d, -3 - d, 0, 0.5f, 1, false);
 	DrawPartAt(pDC, d, -3 - d, PI / 2, 0.5f, 1, false);
 
-	DrawPartAt(pDC, 2 * d + 0.95f, -3 - d, m_angle2 + PI / 4, 0.5f, 1, true);
-	DrawPartAt(pDC, 2 * d + 0.95f, -3 - d, 3 * PI / 4, 0.5f, 1, false);
+	DrawPartAt(pDC, 2.4 * d, -3 - d, m_angle2 + PI / 4, 0.5f, 1, true);
+	DrawPartAt(pDC, 2.4 * d, -3 - d, 3 * PI / 4, 0.5f, 1, false);
 
 	DrawJointAt(pDC, d, -3 - d);
-	DrawJointAt(pDC, 2 * d + 0.95f, -3 - d);
+	DrawJointAt(pDC, 2.4 * d, -3 - d);
 
 	pDC->SetWorldTransform(&beforeBranch);
 
