@@ -46,8 +46,8 @@ Clab2prnaopackeView::Clab2prnaopackeView() noexcept
 	m_angle1 = 0;
 	m_angle2 = 0;
 
-	m_hCactus = GetEnhMetaFile(_T("cactus_part.emf"));
-	m_hCactusLight = GetEnhMetaFile(_T("cactus_part_light.emf"));
+	m_hCactus = GetEnhMetaFile(_T("../cactus_part.emf"));
+	m_hCactusLight = GetEnhMetaFile(_T("../cactus_part_light.emf"));
 }
 
 Clab2prnaopackeView::~Clab2prnaopackeView()
