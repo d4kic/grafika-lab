@@ -238,6 +238,39 @@ void Clab2pripremaView::DrawFigure(CDC* pDC)
 	pDC->SetWorldTransform(&start);
 }
 
+void Clab2pripremaView::IspisiTekst(CDC* pDC, CString tekst, int x, int y, int ugaoTeksta, int ugaoKaraktera)
+{
+	CFont font, * oldFont;
+	LOGFONT lf = { 0 };
+
+	lf.lfHeight = (LONG)(1.1 * KOCKICA);	
+	lf.lfWidth = 15;                        
+	lf.lfWeight = 500;                      
+	lf.lfEscapement = ugaoTeksta * 10;      
+	lf.lfOrientation = ugaoKaraktera * 10;  
+	lf.lfCharSet = DEFAULT_CHARSET;
+	lf.lfOutPrecision = OUT_DEFAULT_PRECIS;
+	lf.lfClipPrecision = CLIP_DEFAULT_PRECIS;
+	lf.lfQuality = DEFAULT_QUALITY;
+	lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+	wcscpy_s(lf.lfFaceName, LF_FACESIZE, L"Arial");
+
+	font.CreateFontIndirectW(&lf);
+	oldFont = pDC->SelectObject(&font);
+
+	int oldMode = pDC->SetBkMode(TRANSPARENT);
+	COLORREF oldColor = pDC->SetTextColor(RGB(0, 0, 0));
+
+	pDC->TextOutW(x, y, tekst);
+
+	pDC->SetTextColor(RGB(255, 255, 0));
+	pDC->TextOutW(x - 2, y - 2, tekst);
+
+	pDC->SetTextColor(oldColor);
+	pDC->SetBkMode(oldMode);
+	pDC->SelectObject(oldFont);
+}
+
 
 void Clab2pripremaView::OnDraw(CDC* pDC)
 {
@@ -257,6 +290,8 @@ void Clab2pripremaView::OnDraw(CDC* pDC)
 
 	if (grid)
 		DrawGrid(pDC, SIZE, 25);
+
+	IspisiTekst(pDC, CString("Kaktusss"), Kockica(19), Kockica(1), -90, -90);
 
 	pDC->SetGraphicsMode(oldMode);
 }

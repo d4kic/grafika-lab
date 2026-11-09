@@ -30,6 +30,7 @@ public:
 	void DrawPot(CDC* pDC);
 	void DrawFigure(CDC* pDC);
 	void DrawGrid(CDC* pDC, int size, int cell);
+	void IspisiTekst(CDC* pDC, CString tekst, int x, int y, int ugaoTeksta, int ugaoKaraktera);
 // Overrides
 public:
 	virtual void OnDraw(CDC* pDC);  // overridden to draw this view
