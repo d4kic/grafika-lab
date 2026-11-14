@@ -68,21 +68,20 @@ BOOL Clab3pripremaView::PreCreateWindow(CREATESTRUCT& cs)
 
 // Clab3pripremaView drawing
 
-
 void Clab3pripremaView::Scale(CDC* pDC, float sX, float sY, bool rightMultiply)
 {
-	XFORM transMatrix;
-	transMatrix.eM11 = sX;
-	transMatrix.eM12 = 0;
-	transMatrix.eM21 = 0;
-	transMatrix.eM22 = sY;
-	transMatrix.eDx = 0;
-	transMatrix.eDy = 0;
+	XFORM mat;
+	mat.eM11 = sX;
+	mat.eM12 = 0;
+	mat.eM21 = 0;
+	mat.eM22 = sY;
+	mat.eDx = 0;
+	mat.eDy = 0;
 
 	if (rightMultiply)
-		pDC->ModifyWorldTransform(&transMatrix, MWT_RIGHTMULTIPLY);
+		pDC->ModifyWorldTransform(&mat, MWT_RIGHTMULTIPLY);
 	else
-		pDC->ModifyWorldTransform(&transMatrix, MWT_LEFTMULTIPLY);
+		pDC->ModifyWorldTransform(&mat, MWT_LEFTMULTIPLY);
 }
 
 void Clab3pripremaView::Rotate(CDC* pDC, float ugao, bool rightMultiply)
@@ -262,13 +261,11 @@ void Clab3pripremaView::NacrtajDeoSlagalice(CDC* pDC, DImage& Dslika, int filter
 
 	// crtamo masku
 	CBitmap* oldMemBmp = MemDC->SelectObject(maska);
-	pDC->BitBlt(-Dslika.Width() / 2, -Dslika.Height() / 2,
-		Dslika.Width(), Dslika.Height(), MemDC, 0, 0, SRCAND);
+	pDC->BitBlt(-Dslika.Width() / 2, -Dslika.Height() / 2, Dslika.Width(), Dslika.Height(), MemDC, 0, 0, SRCAND);
 
 	// crtamo sliku preko maske
 	MemDC->SelectObject(slika);
-	pDC->BitBlt(-Dslika.Width() / 2, -Dslika.Height() / 2,
-		Dslika.Width(), Dslika.Height(), MemDC, 0, 0, SRCPAINT);
+	pDC->BitBlt(-Dslika.Width() / 2, -Dslika.Height() / 2, Dslika.Width(), Dslika.Height(), MemDC, 0, 0, SRCPAINT);
 
 	// vracamo sve i cistimo
 	MemDC->SelectObject(oldMemBmp);
@@ -282,7 +279,6 @@ void Clab3pripremaView::NacrtajDeoSlagalice(CDC* pDC, DImage& Dslika, int filter
 	slika->DeleteObject();
 	delete slika;
 }
-
 
 void Clab3pripremaView::OnDraw(CDC* pDC)
 {
@@ -328,7 +324,7 @@ void Clab3pripremaView::OnDraw(CDC* pDC)
 	this->DrawPuzzlePiece(MemDC, m_slike[4], 95, 393, 18.5 * RAD, 1, 1, true, false, 0);
 
 	// dole desno
-	this->DrawPuzzlePiece(MemDC, m_slike[8], 402, 409, 160.5 * RAD, 1, 1, true, false, 0);
+	this->DrawPuzzlePiece(MemDC, m_slike[8], 402, 409, 161 * RAD, 1, 1, true, false, 0);
 
 	// dole sredina - plavi deo
 	this->DrawPuzzlePiece(MemDC, m_slike[6], 200 + m_pomX, 406 + m_pomY, 113 * RAD, 1, 1, true, false, 3);
@@ -386,7 +382,6 @@ Clab3pripremaDoc* Clab3pripremaView::GetDocument() const // non-debug version is
 
 
 // Clab3pripremaView message handlers
-
 
 BOOL Clab3pripremaView::OnEraseBkgnd(CDC* pDC)
 {
