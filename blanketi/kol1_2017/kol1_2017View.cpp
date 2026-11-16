@@ -17,6 +17,8 @@
 #define new DEBUG_NEW
 #endif
 
+#define TO_RAD 3.14159265 / 180.0f
+#define TO_DEG 180.0f / 3.14159265
 
 // Ckol12017View
 
@@ -28,6 +30,7 @@ BEGIN_MESSAGE_MAP(Ckol12017View, CView)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
 	ON_WM_KEYDOWN()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 // Ckol12017View construction/destruction
@@ -39,6 +42,16 @@ Ckol12017View::Ckol12017View() noexcept
 	noga1 = new DImage;
 	noga2 = new DImage;
 	noga3 = new DImage;
+
+	ugaoRotPrednje = 0;
+	ugaoRotZadnje = 20;
+	predjeniPut = 0;
+	skaliranje = 1;
+	pozadinaX = 0;
+	pozadinaY = 0;
+
+	prednjeNapred = true;
+	zadnjeNapred = false;
 
 	telo->Load(CString("Body.png"));
 	pozadina->Load(CString("Back2.jpg"));
@@ -134,19 +147,23 @@ void Ckol12017View::DrawScene(CDC* pDC, CRect rect)
 	pDC->GetWorldTransform(&oldxf);
 
 	CRect srcRect = rect;
+	srcRect.OffsetRect(pozadinaX, pozadinaY);
 	pozadina->Draw(pDC, srcRect, rect);
+	rectH = srcRect.Height();
+	rectW = srcRect.Width();
 
-	Translate(pDC, 100, 100, false);
+	Translate(pDC, predjeniPut + 100, 100, false);
+	Scale(pDC, skaliranje, skaliranje, false);
 
 	telo->DrawTransparent(pDC,
 		CRect(0, 0, telo->Width(), telo->Height()),
 		CRect(0, 0, telo->Width(), telo->Height()),
 		RGB(255, 255, 255));
 
-	DrawLeg(pDC, 0, 52, 168);
-	DrawLeg(pDC, 20, 52, 168);
-	DrawLeg(pDC, 0, 270, 168);
-	DrawLeg(pDC, 0, 270, 168);
+	DrawLeg(pDC, ugaoRotZadnje, 52, 168);
+	DrawLeg(pDC, -ugaoRotZadnje, 52, 168);
+	DrawLeg(pDC, ugaoRotPrednje, 270, 168);
+	DrawLeg(pDC, -ugaoRotPrednje, 270, 168);
 
 	pDC->SetWorldTransform(&oldxf);
 	pDC->SetGraphicsMode(gm);
@@ -158,7 +175,7 @@ void Ckol12017View::DrawLeg(CDC* pDC, double alpha, double dx, double dy)
 	pDC->GetWorldTransform(&oldxf);
 
 	Translate(pDC, 28 + dx, 28 + dy, false);
-	Rotate(pDC, -alpha, false);
+	Rotate(pDC, (float)(alpha * TO_RAD), false);
 	Translate(pDC, -28, -28, false);
 
 	noga1->DrawTransparent(pDC,
@@ -167,7 +184,7 @@ void Ckol12017View::DrawLeg(CDC* pDC, double alpha, double dx, double dy)
 		RGB(255, 255, 255));
 
 	Translate(pDC, 29, 29 + 138, false);
-	Rotate(pDC, alpha, false);
+	Rotate(pDC, (float)(-alpha * TO_RAD), false);
 	Translate(pDC, -29, -29, false);
 
 	noga2->DrawTransparent(pDC,
@@ -254,7 +271,97 @@ Ckol12017Doc* Ckol12017View::GetDocument() const // non-debug version is inline
 
 void Ckol12017View::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	// TODO: Add your message handler code here and/or call default
+	if (nChar == VK_RIGHT)
+	{
+		predjeniPut += 3;
+		if (prednjeNapred)
+		{
+			ugaoRotPrednje += 1;
+			if (ugaoRotPrednje >= 20)
+				prednjeNapred = false;
+		}
+		else
+		{
+			ugaoRotPrednje -= 1;
+			if (ugaoRotPrednje <= -20)
+				prednjeNapred = true;
+		}
 
+		if (zadnjeNapred)
+		{
+			ugaoRotZadnje += 1;
+			if (ugaoRotZadnje >= 20)
+				zadnjeNapred = false;
+		}
+		else
+		{
+			ugaoRotZadnje -= 1;
+			if (ugaoRotZadnje <= -20)
+				zadnjeNapred = true;
+		}
+	}
+	else if (nChar == VK_LEFT)
+	{
+		predjeniPut -= 3;
+		if (prednjeNapred)
+		{
+			ugaoRotPrednje -= 1;
+			if (ugaoRotPrednje <= -20)
+				prednjeNapred = false;
+		}
+		else
+		{
+			ugaoRotPrednje += 1;
+			if (ugaoRotPrednje >= 20)
+				prednjeNapred = true;
+		}
+
+		if (zadnjeNapred)
+		{
+			ugaoRotZadnje -= 1;
+			if (ugaoRotZadnje <= -20)
+				zadnjeNapred = false;
+		}
+		else
+		{
+			ugaoRotZadnje += 1;
+			if (ugaoRotZadnje >= 20)
+				zadnjeNapred = true;
+		}
+	}
+	else if (nChar == VK_UP)
+	{
+		skaliranje += 0.1;
+	}
+	else if (nChar == VK_DOWN)
+	{
+		skaliranje -= 0.1;
+	}
+	else if (nChar == 'A')
+	{
+		if (pozadinaX >= 200)
+			pozadinaX -= 200;
+	}
+	else if (nChar == 'D')
+	{
+		if (pozadinaX + 200 + rectW <= pozadina->Width())
+			pozadinaX += 200;
+	}
+	else if (nChar == 'W')
+	{
+		if (pozadinaY >= 200)
+			pozadinaY -= 200;
+	}
+	else if (nChar == 'S')
+	{
+		if (pozadinaY + 200 + rectH <= pozadina->Height())
+			pozadinaY += 200;
+	}
+	Invalidate();
 	CView::OnKeyDown(nChar, nRepCnt, nFlags);
+}
+
+BOOL Ckol12017View::OnEraseBkgnd(CDC* pDC)
+{
+	return TRUE;
 }

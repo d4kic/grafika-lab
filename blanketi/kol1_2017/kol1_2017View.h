@@ -42,6 +42,17 @@ protected:
 	DImage* noga2;
 	DImage* noga3;
 
+	float ugaoRotPrednje;
+	float ugaoRotZadnje;
+	float predjeniPut;
+	float skaliranje;
+	bool prednjeNapred;
+	bool zadnjeNapred;
+	float pozadinaX;
+	float pozadinaY;
+	float rectH;
+	float rectW;
+
 	void LoadIdentity(CDC* pDC);
 	void Translate(CDC* pDC, float dX, float dY, bool rightMultiply);
 	void Rotate(CDC* pDC, float angle, bool rightMultiply);
@@ -54,6 +65,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };
 
 #ifndef _DEBUG  // debug version in kol1_2017View.cpp
