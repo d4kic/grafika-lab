@@ -149,8 +149,6 @@ void Ckol12017View::DrawScene(CDC* pDC, CRect rect)
 	CRect srcRect = rect;
 	srcRect.OffsetRect(pozadinaX, pozadinaY);
 	pozadina->Draw(pDC, srcRect, rect);
-	rectH = srcRect.Height();
-	rectW = srcRect.Width();
 
 	Translate(pDC, predjeniPut + 100, 100, false);
 	Scale(pDC, skaliranje, skaliranje, false);
@@ -211,6 +209,8 @@ void Ckol12017View::OnDraw(CDC* pDC)
 
 	CRect rect;
 	GetClientRect(&rect);
+	rectH = rect.Height();
+	rectW = rect.Width();
 
 	CDC* pMemDC = new CDC();
 	pMemDC->CreateCompatibleDC(pDC);
