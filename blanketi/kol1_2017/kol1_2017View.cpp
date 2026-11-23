@@ -140,6 +140,41 @@ void Ckol12017View::Scale(CDC* pDC, float sX, float sY, bool rightMultiply)
 
 // Ckol12017View drawing
 
+void Ckol12017View::DrawImgTransparent(CDC* pDC, DImage* pImage)
+{
+	int w = pImage->Width();
+	int h = pImage->Height();
+	const CRect full(0, 0, w, h);
+
+	unsigned char* pBits = pImage->GetDIBBits();
+	COLORREF color = RGB(pBits[2], pBits[1], pBits[0]);
+
+	CDC srcDC, maskDC;
+	srcDC.CreateCompatibleDC(pDC);
+	maskDC.CreateCompatibleDC(pDC);
+
+	CBitmap bmp, bmpMask;
+	bmp.CreateCompatibleBitmap(pDC, w, h);
+	bmpMask.CreateBitmap(w, h, 1, 1, NULL);
+	CBitmap* oldSrc = srcDC.SelectObject(&bmp);
+	CBitmap* oldMask = maskDC.SelectObject(&bmpMask);
+
+	pImage->Draw(&srcDC, full, full);
+
+	srcDC.SetBkColor(RGB(255, 255, 255));
+	maskDC.BitBlt(0, 0, w, h, &srcDC, 0, 0, SRCCOPY);
+
+	srcDC.SetTextColor(RGB(255, 255, 255));
+	srcDC.SetBkColor(RGB(0, 0, 0));
+	srcDC.BitBlt(0, 0, w, h, &maskDC, 0, 0, SRCAND);
+
+	pDC->BitBlt(0, 0, w, h, &maskDC, 0, 0, SRCAND);
+	pDC->BitBlt(0, 0, w, h, &srcDC, 0, 0, SRCPAINT);
+
+	srcDC.SelectObject(oldSrc);
+	maskDC.SelectObject(oldMask);
+}
+
 void Ckol12017View::DrawScene(CDC* pDC, CRect rect)
 {
 	XFORM oldxf;
@@ -153,10 +188,7 @@ void Ckol12017View::DrawScene(CDC* pDC, CRect rect)
 	Translate(pDC, predjeniPut + 100, 100, false);
 	Scale(pDC, skaliranje, skaliranje, false);
 
-	telo->DrawTransparent(pDC,
-		CRect(0, 0, telo->Width(), telo->Height()),
-		CRect(0, 0, telo->Width(), telo->Height()),
-		RGB(255, 255, 255));
+	DrawImgTransparent(pDC, telo);
 
 	DrawLeg(pDC, ugaoRotZadnje, 52, 168);
 	DrawLeg(pDC, -ugaoRotZadnje, 52, 168);
@@ -176,26 +208,17 @@ void Ckol12017View::DrawLeg(CDC* pDC, double alpha, double dx, double dy)
 	Rotate(pDC, (float)(alpha * TO_RAD), false);
 	Translate(pDC, -28, -28, false);
 
-	noga1->DrawTransparent(pDC,
-		CRect(0, 0, noga1->Width(), noga1->Height()),
-		CRect(0, 0, noga1->Width(), noga1->Height()),
-		RGB(255, 255, 255));
+	DrawImgTransparent(pDC, noga1);
 
 	Translate(pDC, 29, 29 + 138, false);
 	Rotate(pDC, (float)(-alpha * TO_RAD), false);
 	Translate(pDC, -29, -29, false);
 
-	noga2->DrawTransparent(pDC,
-		CRect(0, 0, noga2->Width(), noga2->Height()),
-		CRect(0, 0, noga2->Width(), noga2->Height()),
-		RGB(255, 255, 255));
+	DrawImgTransparent(pDC, noga2);
 
 	Translate(pDC, -34, noga2->Height() - 40, false);
 
-	noga3->DrawTransparent(pDC,
-		CRect(0, 0, noga3->Width(), noga3->Height()),
-		CRect(0, 0, noga3->Width(), noga3->Height()),
-		RGB(255, 255, 255));
+	DrawImgTransparent(pDC, noga3);
 
 	pDC->SetWorldTransform(&oldxf);
 }

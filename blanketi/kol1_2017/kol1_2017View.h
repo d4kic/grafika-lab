@@ -57,7 +57,7 @@ protected:
 	void Translate(CDC* pDC, float dX, float dY, bool rightMultiply);
 	void Rotate(CDC* pDC, float angle, bool rightMultiply);
 	void Scale(CDC* pDC, float sX, float sY, bool rightMultiply);
-
+	void DrawImgTransparent(CDC* pDC, DImage* pImage);
 	void DrawScene(CDC* pDC, CRect rect);
 	void DrawLeg(CDC* pDC, double alpha, double dx, double dy);
 // Generated message map functions

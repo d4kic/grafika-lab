@@ -4763,17 +4763,6 @@ void DImage::Update()
 	m_pBmp->SetBitmapBits(m_nWidth*m_nHeight*m_nBPP, m_pBuf);
 }
 
-void DImage::DrawTransparent(CDC* pDC, CRect rectSrc, CRect rectDC, COLORREF clrTransparent)
-{
-    CDC memDC;
-    memDC.CreateCompatibleDC(pDC);
-    CBitmap* oldBmp = memDC.SelectObject(m_pBmp);
-    pDC->TransparentBlt(rectDC.left, rectDC.top, rectDC.Width(), rectDC.Height(),
-        &memDC, rectSrc.left, rectSrc.top, rectSrc.Width(), rectSrc.Height(),
-        clrTransparent);
-    memDC.SelectObject(oldBmp);
-}
-
 /*void DImage::Unpack()
 {
 	unsigned int lineWidth = GetScanlineWidth();

@@ -135,12 +135,37 @@ void Ckol12018View::DrawBackground(CDC* pDC)
 
 void Ckol12018View::DrawImgTransparent(CDC* pDC, DImage* pImage)
 {
+	int w = pImage->Width();
+	int h = pImage->Height();
+	const CRect full(0, 0, w, h);
+
 	unsigned char* pBits = pImage->GetDIBBits();
-	COLORREF bojaPiksela = RGB(pBits[2], pBits[1], pBits[0]);
-	pImage->DrawTransparent(pDC,
-		CRect(0, 0, pImage->Width(), pImage->Height()),
-		CRect(0, 0, pImage->Width(), pImage->Height()),
-		bojaPiksela);
+	COLORREF color = RGB(pBits[2], pBits[1], pBits[0]);
+
+	CDC srcDC, maskDC;
+	srcDC.CreateCompatibleDC(pDC);
+	maskDC.CreateCompatibleDC(pDC);
+
+	CBitmap bmp, bmpMask;
+	bmp.CreateCompatibleBitmap(pDC, w, h);
+	bmpMask.CreateBitmap(w, h, 1, 1, NULL);
+	CBitmap* oldSrc = srcDC.SelectObject(&bmp);
+	CBitmap* oldMask = maskDC.SelectObject(&bmpMask);
+
+	pImage->Draw(&srcDC, full, full);
+
+	srcDC.SetBkColor(color);
+	maskDC.BitBlt(0, 0, w, h, &srcDC, 0, 0, SRCCOPY);
+
+	srcDC.SetTextColor(RGB(255, 255, 255));
+	srcDC.SetBkColor(RGB(0, 0, 0));
+	srcDC.BitBlt(0, 0, w, h, &maskDC, 0, 0, SRCAND);
+
+	pDC->BitBlt(0, 0, w, h, &maskDC, 0, 0, SRCAND);
+	pDC->BitBlt(0, 0, w, h, &srcDC, 0, 0, SRCPAINT);
+
+	srcDC.SelectObject(oldSrc);
+	maskDC.SelectObject(oldMask);
 }
 
 void Ckol12018View::DrawBody(CDC* pDC)

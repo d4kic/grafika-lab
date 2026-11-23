@@ -4763,40 +4763,6 @@ void DImage::Update()
 	m_pBmp->SetBitmapBits(m_nWidth*m_nHeight*m_nBPP, m_pBuf);
 }
 
-void DImage::DrawTransparent(CDC* pDC, CRect rcImg, CRect rcDC, COLORREF color)
-{
-    const CRect full(0, 0, m_nWidth, m_nHeight);
-
-    CDC srcDC, maskDC;
-    srcDC.CreateCompatibleDC(pDC);
-    maskDC.CreateCompatibleDC(pDC);
-
-    CBitmap bmp, bmpMask;
-    bmp.CreateCompatibleBitmap(pDC, m_nWidth, m_nHeight);
-    bmpMask.CreateBitmap(m_nWidth, m_nHeight, 1, 1, NULL);
-    srcDC.SelectObject(&bmp);
-    maskDC.SelectObject(&bmpMask);
-
-    // 1. kopija slike u srcDC
-    Draw(&srcDC, full, full);
-
-    // 2. maska: providna boja -> 1, sve ostalo -> 0
-    srcDC.SetBkColor(color);
-    maskDC.BitBlt(0, 0, m_nWidth, m_nHeight, &srcDC, 0, 0, SRCCOPY);
-
-    // 3. providni pikseli u slici postaju crni
-    srcDC.SetTextColor(RGB(255, 255, 255));
-    srcDC.SetBkColor(RGB(0, 0, 0));
-    srcDC.BitBlt(0, 0, m_nWidth, m_nHeight, &maskDC, 0, 0, SRCAND);
-
-    // 4. na odrediste: AND sa maskom pa OR sa slikom
-    pDC->SetStretchBltMode(HALFTONE);
-    pDC->StretchBlt(rcDC.left, rcDC.top, rcDC.Width(), rcDC.Height(),
-        &maskDC, rcImg.left, rcImg.top, rcImg.Width(), rcImg.Height(), SRCAND);
-    pDC->StretchBlt(rcDC.left, rcDC.top, rcDC.Width(), rcDC.Height(),
-        &srcDC, rcImg.left, rcImg.top, rcImg.Width(), rcImg.Height(), SRCPAINT);
-}
-
 /*void DImage::Unpack()
 {
 	unsigned int lineWidth = GetScanlineWidth();
